@@ -1,0 +1,2 @@
+class Gamma::DatabaseConnector
+end

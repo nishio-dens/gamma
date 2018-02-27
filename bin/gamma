@@ -1,0 +1,24 @@
+#!/usr/bin/env ruby
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+require "rubygems"
+require "gamma"
+require "thor"
+
+class GammaCLI < Thor
+
+  desc "apply", "Apply"
+  option :settings, aliases: "-s", desc: "Database Settings yaml", required: true
+  option :data, aliases: "-d", desc: "Table Sync Settings yaml", required: true
+  def apply
+    Gamma::Command::Apply.new(options).execute
+  end
+
+  desc "dryrun", "Dryrun"
+  option :settings, aliases: "-s", desc: "Database Settings yaml", required: true
+  option :data, aliases: "-d", desc: "Table Sync Settings yaml", required: true
+  def dryrun
+    Gamma::Command::Dryrun.new(options).execute
+  end
+end
+
+GammaCLI.start(ARGV)

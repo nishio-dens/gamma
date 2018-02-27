@@ -1,0 +1,2 @@
+class Gamma::Importer
+end
