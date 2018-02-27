@@ -1,6 +1,6 @@
 # Gamma
 
-TODO
+Database Synchronizer. Transfer data from one database to another easily.
 
 ## Installation
 
@@ -20,7 +20,17 @@ Or install it yourself as:
 
 ## Usage
 
-TODO
+### Dryrun
+
+```
+gamma dryrun --settings ./tmp/settings.yml --data ./tmp/data.yml
+```
+
+### Apply
+
+```
+gamma apply --settings ./tmp/settings.yml --data ./tmp/data.yml
+```
 
 ## Development
 

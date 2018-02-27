@@ -9,6 +9,8 @@ class GammaCLI < Thor
   desc "apply", "Apply"
   option :settings, aliases: "-s", desc: "Database Settings yaml", required: true
   option :data, aliases: "-d", desc: "Table Sync Settings yaml", required: true
+  option :hook_dir, aliases: "-h", desc: "Hook script directory"
+  option :sync_history, desc: "Hook script directory"
   def apply
     Gamma::Command::Apply.new(options).execute
   end
@@ -16,6 +18,8 @@ class GammaCLI < Thor
   desc "dryrun", "Dryrun"
   option :settings, aliases: "-s", desc: "Database Settings yaml", required: true
   option :data, aliases: "-d", desc: "Table Sync Settings yaml", required: true
+  option :hook_dir, aliases: "-h", desc: "Hook script directory"
+  option :sync_history, desc: "Hook script directory"
   def dryrun
     Gamma::Command::Dryrun.new(options).execute
   end

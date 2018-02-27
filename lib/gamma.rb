@@ -1,6 +1,9 @@
 require "rubygems"
 require "active_support"
 require "active_support/core_ext"
+require "colorize"
+require "logger"
+require "json"
 
 if ENV["DEBUG"].present?
   require "pry"
@@ -9,6 +12,9 @@ end
 require "gamma/version"
 require "gamma/table"
 require "gamma/hook"
+require "gamma/script"
+require "gamma/script/row_script"
+require "gamma/sync_database"
 require "gamma/database_settings"
 require "gamma/database_connector"
 require "gamma/database_connector/mysql_connector"

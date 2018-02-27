@@ -10,7 +10,7 @@ class Gamma::DatabaseConnector::MysqlConnector < Gamma::DatabaseConnector
   end
 
   def client(database_name = @config[:database])
-    @mysql ||= Mysql2::Client.new(
+    @_client ||= Mysql2::Client.new(
       host: @config[:host],
       port: @config[:port] || DEFAULT_PORT,
       username: @config[:username],
@@ -20,7 +20,7 @@ class Gamma::DatabaseConnector::MysqlConnector < Gamma::DatabaseConnector
   end
 
   def schema_client
-    @mysql ||= Mysql2::Client.new(
+    @_schema_client ||= Mysql2::Client.new(
       host: @config[:host],
       port: @config[:port] || DEFAULT_PORT,
       username: @config[:username],

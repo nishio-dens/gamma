@@ -11,7 +11,7 @@ class Gamma::Parser::DataParser < Gamma::Parser
     exist_tables = database_exist_tables
     @data_settings.map do |d|
       parse_data_settings(d[:data], exist_tables)
-    end
+    end.flatten
   end
 
   def parse_data_settings(data, exist_tables)
@@ -30,7 +30,7 @@ class Gamma::Parser::DataParser < Gamma::Parser
 
       t
     end
-    binding.pry
+    tables
   end
 
   private

@@ -24,6 +24,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "mysql2"
   spec.add_dependency "activesupport"
   spec.add_dependency "thor", "~> 0.20"
+  spec.add_dependency "colorize", "~> 0.8.1"
 
   spec.required_ruby_version = ">= 2.3.0"
 
