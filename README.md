@@ -32,6 +32,84 @@ gamma dryrun --settings ./tmp/settings.yml --data ./tmp/data.yml
 gamma apply --settings ./tmp/settings.yml --data ./tmp/data.yml
 ```
 
+### data.yml Example
+
+```
+- data:
+    table:
+      - "*"
+    table_without:
+      - "users"
+      - "schema_migrations"
+      - "ar_internal_metadata"
+    mode: "replace"
+    delta_column: "updated_at"
+- data:
+    table: "users"
+    mode: "replace"
+    delta_column: "updated_at"
+    hooks:
+      - column:
+          name:
+            - "email"
+          scripts:
+            - "hooks/mask_email.rb"
+      - column:
+          name:
+            - "name"
+          scripts:
+            - "hooks/mask_name.rb"
+      - row:
+          scripts:
+            - "hooks/image.rb"
+```
+
+### Hook Script Example
+
+```
+# $YourDir/hooks/mask_name.rb
+
+class MaskName
+  def execute(apply, column, value)
+    value = "●●#{value[2..-1]}"
+    value
+  end
+end
+
+# $YourDir/hooks/image.rb
+
+class Image
+  def execute(apply, record)
+    #
+    # Copy image data from one storage to another
+    #
+
+    record
+  end
+end
+```
+
+### settings.yml Example
+
+```
+in_database_config:
+  adapter: mysql2
+  encoding: utf8
+  database: real_database
+  pool: 5
+  host: localhost
+  username: root
+  password:
+out_database_config:
+  adapter: mysql2
+  encoding: utf8
+  database: sync_to_database
+  pool: 5
+  host: localhost
+  username: root
+  password:
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
