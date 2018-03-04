@@ -2,6 +2,8 @@
 
 Database Synchronizer. Transfer data from one database to another easily.
 
+[![Gem Version](https://badge.fury.io/rb/gamma.svg)](https://badge.fury.io/rb/gamma)
+
 ## Installation
 
 Add this line to your application's Gemfile:
