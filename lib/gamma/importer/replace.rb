@@ -1,10 +1,11 @@
 class Gamma::Importer::Replace < Gamma::Importer
   BATCH_SIZE = 1000
 
-  def initialize(in_client, out_client, table)
+  def initialize(in_client, out_client, table, apply: false)
     @in_client = in_client
     @out_client = out_client
     @table = table
+    @apply = apply
   end
 
   def execute
@@ -20,13 +21,13 @@ class Gamma::Importer::Replace < Gamma::Importer
     columns = @table.in_exist_columns & @table.out_exist_columns
     primary_key = "id" # TODO: Fixme
 
-    current_in_pid = 1
+    current_in_pid = 0
     current_in_offset = 0
     while true do
       select_columns = columns.map { |c| "`#{c}`" }.join(",")
       break unless select_columns.present?
 
-      in_query = "SELECT #{select_columns} FROM #{@table.table_name} WHERE id >= #{current_in_pid} LIMIT #{BATCH_SIZE} OFFSET #{current_in_offset}"
+      in_query = "SELECT #{select_columns} FROM #{@table.table_name} WHERE id > #{current_in_pid} LIMIT #{BATCH_SIZE}"
       logger.info(in_query) if ENV["DEBUG"]
       in_records = @in_client.client.query(in_query).to_a
 
@@ -46,7 +47,7 @@ class Gamma::Importer::Replace < Gamma::Importer
       current_in_offset = current_in_offset + BATCH_SIZE
     end
   rescue => e
-    logger.error("Sync Error #{@table.table_name} - #{e.backtrace.join("\n")}".red)
+    logger.error("Sync Error #{@table.table_name} \n #{e}\n #{e.backtrace.join("\n")}".red)
   end
 
   def exist_records(select_columns, primary_key, in_pids)
@@ -60,21 +61,26 @@ class Gamma::Importer::Replace < Gamma::Importer
     need_update = @table.delta_column.blank?
     need_update ||= @table.delta_column.present? && in_record[@table.delta_column] != out_record[@table.delta_column]
     if need_update
-      columns = (@table.in_exist_columns & @table.out_exist_columns).reject { |c| in_record[c].nil? }
-      values = update_record_values(in_record, columns)
+      record = @table.record_value(in_record)
+      columns = (@table.in_exist_columns & @table.out_exist_columns).reject { |c| record[c].nil? }
+      values = update_record_values(record, columns)
 
       query = <<-EOS
-        UPDATE `#{@table.table_name}` SET #{values} WHERE #{primary_key} = #{in_record[primary_key]}
+        UPDATE `#{@table.table_name}` SET #{values} WHERE #{primary_key} = #{record[primary_key]}
       EOS
       query = query.strip_heredoc
       logger.info(query) if ENV["DEBUG"]
 
-      # TODO: remove this please
-      # @out_client.client.query(query)
+      if @apply
+        @out_client.client.query(query)
+      else
+        logger.info("DRYRUN: #{query}")
+      end
     end
   end
 
-  def insert_out_record(record)
+  def insert_out_record(in_record)
+    record = @table.record_value(in_record)
     columns = (@table.in_exist_columns & @table.out_exist_columns).reject { |c| record[c].nil? }
     select_columns = columns.map { |c| "`#{c}`" }.join(",")
     values = insert_record_values(record, columns)
@@ -84,11 +90,16 @@ class Gamma::Importer::Replace < Gamma::Importer
     EOS
     query = query.strip_heredoc
     logger.info(query) if ENV["DEBUG"]
-    @out_client.client.query(query)
+
+    if @apply
+      @out_client.client.query(query)
+    else
+      logger.info("DRYRUN: #{query}")
+    end
   end
 
   def insert_record_values(record, columns)
-    r = @table.record_values(record)
+    r = record
     columns.map do |v|
       c = if r[v].is_a?(Time)
             r[v].strftime("%Y-%m-%d %H:%M:%S")
@@ -100,7 +111,7 @@ class Gamma::Importer::Replace < Gamma::Importer
   end
 
   def update_record_values(record, columns)
-    r = @table.record_values(record)
+    r = record
     columns.map do |v|
       c = if r[v].is_a?(Time)
             r[v].strftime("%Y-%m-%d %H:%M:%S")

@@ -1,4 +1,4 @@
-class Gamma::Command::Apply < Gamma::Command
+class Gamma::Command::Dryrun < Gamma::Command
   def initialize(opts)
     @database_settings = Gamma::DatabaseSettings.new(opts[:settings])
     # TODO: support postgres adapter
@@ -6,7 +6,7 @@ class Gamma::Command::Apply < Gamma::Command
     @out_client = Gamma::DatabaseConnector::MysqlConnector.new(@database_settings.out_database)
     @hook_root_dir = opts[:hook_dir] || "."
     @syncdb = Gamma::SyncDatabase.new(opts[:sync_history] || "./history.json")
-    @data_parser = Gamma::Parser::DataParser.new(opts[:data], @hook_root_dir, @in_client, @out_client, apply: true)
+    @data_parser = Gamma::Parser::DataParser.new(opts[:data], @hook_root_dir, @in_client, @out_client, apply: false)
   end
 
   def execute
@@ -18,7 +18,7 @@ class Gamma::Command::Apply < Gamma::Command
 
       case t.sync_mode
       when "replace"
-        Gamma::Importer::Replace.new(@in_client, @out_client, t, apply: true).execute
+        Gamma::Importer::Replace.new(@in_client, @out_client, t).execute
       else
         logger.info("[#{t.sync_mode}] Sync Failed #{t.table_name}. Unknown Sync mode".red)
       end

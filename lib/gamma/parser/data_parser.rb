@@ -1,10 +1,12 @@
 class Gamma::Parser::DataParser < Gamma::Parser
   DEFAULT_SYNC_MODE = "replace"
 
-  def initialize(data_yaml_path, in_client, out_client)
+  def initialize(data_yaml_path, hook_root_dir, in_client, out_client, apply: false)
     @data_settings = YAML.load_file(data_yaml_path).map(&:with_indifferent_access)
+    @hook_root_dir = hook_root_dir
     @in_client = in_client
     @out_client = out_client
+    @apply = apply
   end
 
   def gamma_tables
@@ -101,6 +103,8 @@ class Gamma::Parser::DataParser < Gamma::Parser
           h.hook_type = :row
           h.column_name = nil
           h.script_path = script
+          h.root_dir = @hook_root_dir
+          h.apply = @apply
           h
         end
       elsif type == :column
@@ -115,6 +119,8 @@ class Gamma::Parser::DataParser < Gamma::Parser
           h.hook_type = :column
           h.column_name = column_name
           h.script_path = script
+          h.root_dir = @hook_root_dir
+          h.apply = @apply
           h
         end
       else

@@ -1,5 +1,5 @@
 class Gamma::Script::RowScript
-  def execute(column, value)
+  def execute(apply, value)
     fail "Not Implemented"
   end
 end
