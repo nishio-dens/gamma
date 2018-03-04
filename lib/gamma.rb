@@ -4,6 +4,7 @@ require "active_support/core_ext"
 require "colorize"
 require "logger"
 require "json"
+require "yaml"
 
 if ENV["DEBUG"].present?
   require "pry"
