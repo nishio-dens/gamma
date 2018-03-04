@@ -23,6 +23,11 @@ class GammaCLI < Thor
   def dryrun
     Gamma::Command::Dryrun.new(options).execute
   end
+
+  desc "dryrun", "Dryrun"
+  def version
+    puts Gamma::VERSION
+  end
 end
 
 GammaCLI.start(ARGV)
