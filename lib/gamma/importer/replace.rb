@@ -22,7 +22,6 @@ class Gamma::Importer::Replace < Gamma::Importer
     primary_key = "id" # TODO: Fixme
 
     current_in_pid = 0
-    current_in_offset = 0
     while true do
       select_columns = columns.map { |c| "`#{c}`" }.join(",")
       break unless select_columns.present?
@@ -44,7 +43,6 @@ class Gamma::Importer::Replace < Gamma::Importer
       end
 
       current_in_pid = in_records.last[primary_key]
-      current_in_offset = current_in_offset + BATCH_SIZE
     end
   rescue => e
     logger.error("Sync Error #{@table.table_name} \n #{e}\n #{e.backtrace.join("\n")}".red)
