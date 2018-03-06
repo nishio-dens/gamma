@@ -26,7 +26,7 @@ class Gamma::Importer::Replace < Gamma::Importer
       select_columns = columns.map { |c| "`#{c}`" }.join(",")
       break unless select_columns.present?
 
-      in_query = "SELECT #{select_columns} FROM #{@table.table_name} WHERE id > #{current_in_pid} LIMIT #{BATCH_SIZE}"
+      in_query = "SELECT #{select_columns} FROM #{@table.table_name} WHERE #{primary_key} > #{current_in_pid} LIMIT #{BATCH_SIZE}"
       logger.info(in_query) if ENV["DEBUG"]
       in_records = @in_client.client.query(in_query).to_a
 
