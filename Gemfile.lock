@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    gamma (0.1.5)
+    gamma (0.1.6)
       activesupport
       colorize (~> 0.8.1)
       mysql2
