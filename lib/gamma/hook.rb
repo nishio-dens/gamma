@@ -6,11 +6,10 @@ class Gamma::Hook
     fail "Hook Scripts Not Found. path: #{path}" unless File.exist?(path)
 
     result = record
-    scripts = open(File.join(root_dir, script_path)).read
-    eval(scripts)
+    require File.join(root_dir, script_path)
 
     begin
-      klass_name = "Gamma::Hook::#{File.basename(path, ".*").camelize}"
+      klass_name = "#{File.basename(path, ".*").camelize}"
       instance = klass_name.constantize.new
       case self.hook_type.to_s
       when "column"
