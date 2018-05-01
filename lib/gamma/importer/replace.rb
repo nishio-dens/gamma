@@ -104,7 +104,7 @@ class Gamma::Importer::Replace < Gamma::Importer
           else
             r[v]
           end
-      "\"#{c.to_s.gsub('"', '\"').gsub("'", "\'")}\""
+     "\"#{@out_client.client.escape(c.to_s)}\""
     end.join(",")
   end
 
@@ -116,7 +116,7 @@ class Gamma::Importer::Replace < Gamma::Importer
           else
             r[v]
           end
-      "`#{v}` = \"#{c.to_s.gsub('"', '\"').gsub("'", "\'")}\""
+      "`#{v}` = \"#{@out_client.client.escape(c.to_s)}\""
     end.join(",")
   end
 end
