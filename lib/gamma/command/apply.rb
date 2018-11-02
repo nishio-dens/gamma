@@ -19,6 +19,8 @@ class Gamma::Command::Apply < Gamma::Command
       case t.sync_mode
       when "replace"
         Gamma::Importer::Replace.new(@in_client, @out_client, t, apply: true).execute
+      when "force_replace"
+        Gamma::Importer::Replace.new(@in_client, @out_client, t, apply: true, ignore_error: true).execute
       else
         logger.info("[#{t.sync_mode}] Sync Failed #{t.table_name}. Unknown Sync mode".red)
       end

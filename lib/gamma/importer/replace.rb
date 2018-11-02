@@ -1,11 +1,12 @@
 class Gamma::Importer::Replace < Gamma::Importer
   BATCH_SIZE = 1000
 
-  def initialize(in_client, out_client, table, apply: false)
+  def initialize(in_client, out_client, table, apply: false, ignore_error: false)
     @in_client = in_client
     @out_client = out_client
     @table = table
     @apply = apply
+    @ignore_error = ignore_error
   end
 
   def execute
@@ -70,7 +71,7 @@ class Gamma::Importer::Replace < Gamma::Importer
       logger.info(query) if ENV["DEBUG"]
 
       if @apply
-        @out_client.client.query(query)
+        exec_query(query)
       else
         logger.info("DRYRUN: #{query}")
       end
@@ -90,7 +91,7 @@ class Gamma::Importer::Replace < Gamma::Importer
     logger.info(query) if ENV["DEBUG"]
 
     if @apply
-      @out_client.client.query(query)
+      exec_query(query)
     else
       logger.info("DRYRUN: #{query}")
     end
@@ -118,5 +119,16 @@ class Gamma::Importer::Replace < Gamma::Importer
           end
       "`#{v}` = \"#{@out_client.client.escape(c.to_s)}\""
     end.join(",")
+  end
+
+  def exec_query(query)
+    @out_client.client.query(query)
+  rescue => e
+    if @ignore_error
+      logger.error("An ERROR has occurred and ignore it.")
+      logger.error(e)
+    else
+      throw e
+    end
   end
 end
