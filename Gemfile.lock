@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    gamma (0.1.8)
+    gamma (0.1.9)
       activesupport
       colorize (~> 0.8.1)
       mysql2
@@ -10,7 +10,7 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (5.2.0)
+    activesupport (5.2.1)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 0.7, < 2)
       minitest (~> 5.1)
@@ -18,11 +18,11 @@ GEM
     coderay (1.1.2)
     colorize (0.8.1)
     concurrent-ruby (1.0.5)
-    i18n (1.0.1)
+    i18n (1.1.1)
       concurrent-ruby (~> 1.0)
     method_source (0.9.0)
     minitest (5.11.3)
-    mysql2 (0.5.1)
+    mysql2 (0.5.2)
     pry (0.11.3)
       coderay (~> 1.1.0)
       method_source (~> 0.9.0)
