@@ -15,17 +15,23 @@ class Gamma::Command::Apply < Gamma::Command
     tables = @data_parser.gamma_tables
     output_setting_warning(tables)
 
-    tables.each do |t|
+    sync = lambda do |t|
       logger.info("[#{t.sync_mode}] Sync Start #{t.table_name}".green)
 
       case t.sync_mode
-      when "replace"
+      when 'replace'
         Gamma::Importer::Replace.new(@in_client, @out_client, t, apply: true).execute
-      when "force_replace"
+      when 'force_replace'
         Gamma::Importer::Replace.new(@in_client, @out_client, t, apply: true, ignore_error: true).execute
       else
         logger.info("[#{t.sync_mode}] Sync Failed #{t.table_name}. Unknown Sync mode".red)
       end
+    end
+
+    if ENV['PARALLEL_COUNT']
+      Parallel.each(tables, in_processes: ENV['PARALLEL_COUNT'].to_i) { |t| sync.call(t) }
+    else
+      tables.each { |t| sync.call(t) }
     end
   end
 end
