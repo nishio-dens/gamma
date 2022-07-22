@@ -1,11 +1,13 @@
+require 'parallel'
+
 class Gamma::Command::Apply < Gamma::Command
   def initialize(opts)
     @database_settings = Gamma::DatabaseSettings.new(opts[:settings])
     # TODO: support postgres adapter
     @in_client = Gamma::DatabaseConnector::MysqlConnector.new(@database_settings.in_database)
     @out_client = Gamma::DatabaseConnector::MysqlConnector.new(@database_settings.out_database)
-    @hook_root_dir = opts[:hook_dir] || "."
-    @syncdb = Gamma::SyncDatabase.new(opts[:sync_history] || "./history.json")
+    @hook_root_dir = opts[:hook_dir] || '.'
+    @syncdb = Gamma::SyncDatabase.new(opts[:sync_history] || './history.json')
     @data_parser = Gamma::Parser::DataParser.new(opts[:data], @hook_root_dir, @in_client, @out_client, apply: true)
   end
 
